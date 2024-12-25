@@ -36,7 +36,7 @@ export const getSongId = async ({
   voiceType: VoiceType;
   genre: GenreType;
 }) => {
-  const input = breakString(prompt, 6);
+  const input = breakString(prompt.replace(/\n/g, " "), 6);
   let payload = { ...data, lyrics: input };
   switch (voiceType) {
     case "male":
@@ -84,7 +84,10 @@ export const getSong = async (jobId: string) => {
   return json;
 };
 
-export const generateLyrics = async (prompt: string) => {
+export const generateLyrics = async (
+  prompt: string,
+  model: "llama3-8b-8192" | "gemma2-9b-it",
+) => {
   const response = await fetch(
     "https://api.groq.com/openai/v1/chat/completions",
     {
@@ -94,12 +97,12 @@ export const generateLyrics = async (prompt: string) => {
         Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "llama3-8b-8192",
+        model: model,
         messages: [
           {
             role: "system",
             content:
-              "You are a music lyrics writer and your task is to write lyrics under 30 words base on user's prompt. Just return the lyrics and nothing else",
+              "You are a music lyrics writer. Write song lyrics in under 30 words based on the user's prompt. Return only the lyrics and nothing else.",
           },
           {
             role: "user",

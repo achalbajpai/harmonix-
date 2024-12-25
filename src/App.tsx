@@ -9,10 +9,14 @@ import { generateLyrics, getSong, getSongId } from "./services/services";
 import { useToast } from "./hooks/use-toast";
 import { ClimbingBoxLoader } from "react-spinners";
 import AudioPlayer from "./components/AudioPlayer";
+import { ModelSelector } from "./components/ModelSelector";
 
 function App() {
   const [voiceType, setVoiceType] = useState<VoiceType>("male");
   const [genre, setGenre] = useState<GenreType>("pop");
+  const [model, setModel] = useState<"llama3-8b-8192" | "gemma2-9b-it">(
+    "llama3-8b-8192",
+  );
   const [prompt, setPrompt] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [audioUrl, setAudioUrl] = useState<string>("");
@@ -46,7 +50,8 @@ function App() {
   };
 
   const handleGenerateLyrics = async () => {
-    const lyrics = await generateLyrics(prompt);
+    console.log(model);
+    const lyrics = await generateLyrics(prompt, model);
     setPrompt(lyrics);
   };
 
@@ -62,9 +67,9 @@ function App() {
       )}
       <div className="flex items-center w-full justify-center -ml-7">
         <img src="/favicon.png" alt="logo" className="w-20" />
-        <h1 className="text-5xl">Harmonix</h1>
+        <h1 className="text-5xl">Harrmonix</h1>
       </div>
-      <section className="w-[1024px] flex flex-col p-5 gap-10 ring ring-purple-600 rounded">
+      <section className="w-[1100px] flex flex-col p-5 gap-10 ring ring-purple-600 rounded">
         <div className="flex flex-col gap-3">
           <h1>Enter Prompt</h1>
           <Textarea
@@ -74,7 +79,7 @@ function App() {
             onChange={(e) => setPrompt(e.currentTarget.value.trimStart())}
           />
         </div>
-        <section className="flex gap-20 w-full">
+        <section className="flex gap-10 w-full">
           <div className="flex gap-3 items-center">
             <h1>Choose voice</h1>
             <VoiceSelector voiceType={voiceType} setVoiceType={setVoiceType} />
@@ -82,6 +87,10 @@ function App() {
           <div className="flex gap-3 items-center">
             <h1>Select Genre</h1>
             <GenreSelector genre={genre} setGenre={setGenre} />
+          </div>
+          <div className="flex gap-3 items-center">
+            <h1>Select Model</h1>
+            <ModelSelector model={model} setModel={setModel} />
           </div>
           <div className="ml-auto flex gap-10">
             <Button
